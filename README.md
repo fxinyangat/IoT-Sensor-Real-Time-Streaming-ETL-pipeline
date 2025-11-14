@@ -36,6 +36,8 @@ This solution enables proactive monitoring and rapid response to structural anom
 
 4. **Dashboard**  
    - Visualizes live gold-layer metrics for all five bridges.
+   <img width="1750" height="891" alt="image" src="https://github.com/user-attachments/assets/04ad7b32-f691-469b-92f2-e941540fceb1" />
+
 
 ## Monitoring & Observability
 
@@ -62,4 +64,5 @@ This solution enables proactive monitoring and rapid response to structural anom
 - Databricks Jobs
 - Databricks Dashboard
 - Spark Structured Streaming
+
 
