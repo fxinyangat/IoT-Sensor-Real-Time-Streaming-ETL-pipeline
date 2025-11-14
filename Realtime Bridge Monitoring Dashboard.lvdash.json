@@ -1,0 +1,801 @@
+{
+  "datasets": [
+    {
+      "name": "fea69a45",
+      "displayName": "bridge_metrics",
+      "queryLines": [
+        "SELECT \n",
+        "md.bridge_id, \n",
+        "md.name, \n",
+        "md.location, \n",
+        "md.type,\n",
+        "md.height,\n",
+        "md.opened_year,\n",
+        "md.length_m,\n",
+        "md.main_span_m,\n",
+        "window_start, \n",
+        "window_end, \n",
+        "avg_temp, \n",
+        "max_vibration, \n",
+        "max_tilt_angle \n",
+        "FROM \n",
+        "bridge_monitoring.`03_gold`.bridge_metrics bm join bridge_monitoring.`02_silver`.bridge_metadata md ON bm.bridge_id = md.bridge_id\n",
+        "ORDER BY window_start DESC"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "3a42e730",
+      "displayName": "home",
+      "layout": [
+        {
+          "widget": {
+            "name": "0405bb00",
+            "multilineTextboxSpec": {
+              "lines": [
+                "<span style=\"text-align:center;display:block\"><span style=\"font-size: 24px;color: #E8ECF0;\">**Realtime Bridge Structural-Health Data Monitoring for NYC**</span></span>"
+              ]
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "light": "#D0D003"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "2f60960a",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "fea69a45",
+                  "fields": [
+                    {
+                      "name": "countdistinct(bridge_id)",
+                      "expression": "COUNT(DISTINCT `bridge_id`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "countdistinct(bridge_id)"
+                }
+              },
+              "frame": {
+                "title": "Number of Bridges",
+                "showTitle": true
+              }
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "light": "#D96363"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "fa20b489",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "fea69a45",
+                  "fields": [
+                    {
+                      "name": "avg(avg_temp)",
+                      "expression": "AVG(`avg_temp`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "avg(avg_temp)"
+                }
+              },
+              "frame": {
+                "title": "Average Temperature (°C)",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 5,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "46b36b76",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "fea69a45",
+                  "fields": [
+                    {
+                      "name": "max(max_vibration)",
+                      "expression": "MAX(`max_vibration`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "max(max_vibration)"
+                }
+              },
+              "frame": {
+                "title": "Max. Bridge Vibration (m/s²)",
+                "showTitle": true
+              }
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "light": "#D96363"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "c3bf82a9",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "fea69a45",
+                  "fields": [
+                    {
+                      "name": "daily(window_end)",
+                      "expression": "DATE_TRUNC(\"DAY\", `window_end`)"
+                    },
+                    {
+                      "name": "minutely(window_end)",
+                      "expression": "DATE_TRUNC(\"MINUTE\", `window_end`)"
+                    },
+                    {
+                      "name": "avg(avg_temp)",
+                      "expression": "AVG(`avg_temp`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "minutely(window_end)",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "axis": {
+                    "title": "Time Window"
+                  },
+                  "format": {
+                    "type": "date-time",
+                    "date": "none",
+                    "time": "locale-hour-minute",
+                    "leadingZeros": false
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(avg_temp)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "axis": {
+                    "title": "Bridge Temp",
+                    "hideGrid": false,
+                    "hideLabels": false
+                  }
+                },
+                "label": {
+                  "show": false
+                },
+                "extra": [
+                  {
+                    "fieldName": "daily(window_end)"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Real Time Bridge Temperature Trends (every 10 minute)"
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 3,
+            "width": 4,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "351d0a5d",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "fea69a45",
+                  "fields": [
+                    {
+                      "name": "countdistinct(name)",
+                      "expression": "COUNT(DISTINCT `name`)"
+                    },
+                    {
+                      "name": "type",
+                      "expression": "`type`"
+                    },
+                    {
+                      "name": "count(*)",
+                      "expression": "COUNT(`*`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "countdistinct(name)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": " "
+                },
+                "color": {
+                  "fieldName": "type",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                },
+                "extra": [
+                  {
+                    "fieldName": "count(*)",
+                    "displayName": "Number of Bridges"
+                  }
+                ]
+              },
+              "frame": {
+                "title": "Bridge Types Distribution",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 9,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "c3d347c3",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "fea69a45",
+                  "fields": [
+                    {
+                      "name": "max_vibration",
+                      "expression": "`max_vibration`"
+                    },
+                    {
+                      "name": "opened_year",
+                      "expression": "`opened_year`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "heatmap",
+              "encodings": {
+                "y": {
+                  "fieldName": "opened_year",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "max_vibration",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "frame": {
+                "title": "Distribution of Bridge Vibrations Against Year of Make",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 15,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "1bb4df68",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "fea69a45",
+                  "fields": [
+                    {
+                      "name": "daily(window_end)",
+                      "expression": "DATE_TRUNC(\"DAY\", `window_end`)"
+                    },
+                    {
+                      "name": "minutely(window_start)",
+                      "expression": "DATE_TRUNC(\"MINUTE\", `window_start`)"
+                    },
+                    {
+                      "name": "avg(max_vibration)",
+                      "expression": "AVG(`max_vibration`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "minutely(window_start)",
+                  "scale": {
+                    "type": "temporal"
+                  },
+                  "axis": {
+                    "title": "Time Window"
+                  },
+                  "format": {
+                    "type": "date-time",
+                    "date": "none",
+                    "time": "locale-hour-minute",
+                    "leadingZeros": false
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(max_vibration)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "axis": {
+                    "title": "Bridge Temp",
+                    "hideGrid": false,
+                    "hideLabels": false
+                  },
+                  "displayName": "Vibration (m/s²)"
+                },
+                "label": {
+                  "show": false
+                },
+                "extra": [
+                  {
+                    "fieldName": "daily(window_end)"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Real Time Bridge Temperature Trends (every 10 minute)"
+              },
+              "mark": {
+                "colors": [
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 2
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 3
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 4
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 5
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 6
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 7
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 8
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 9
+                  },
+                  {
+                    "themeColorType": "visualizationColors",
+                    "position": 10
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 9,
+            "width": 3,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "10d7ec9e",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "fea69a45",
+                  "fields": [
+                    {
+                      "name": "type",
+                      "expression": "`type`"
+                    },
+                    {
+                      "name": "count(bridge_id)",
+                      "expression": "COUNT(`bridge_id`)"
+                    }
+                  ],
+                  "cubeGroupingSets": {
+                    "sets": [
+                      {
+                        "fieldNames": [
+                          "type"
+                        ]
+                      },
+                      {}
+                    ]
+                  },
+                  "disaggregated": false,
+                  "orders": [
+                    {
+                      "direction": "ASC",
+                      "expression": "`type`"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "pivot",
+              "encodings": {
+                "rows": [
+                  {
+                    "fieldName": "type",
+                    "displayName": "Bridge Type"
+                  }
+                ],
+                "cell": {
+                  "type": "multi-cell",
+                  "fields": [
+                    {
+                      "fieldName": "count(bridge_id)",
+                      "cellType": "text",
+                      "displayName": "No. of Bridges"
+                    }
+                  ]
+                }
+              },
+              "frame": {
+                "title": "Bridge Types Distribution",
+                "showTitle": true
+              }
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 15,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "a97388d5",
+            "queries": [
+              {
+                "name": "dashboards/01f0c0d09cfd130aaff0014710caeb65/datasets/01f0c0d1143c186394f4b0257f9ef2d2_name",
+                "query": {
+                  "datasetName": "fea69a45",
+                  "fields": [
+                    {
+                      "name": "name",
+                      "expression": "`name`"
+                    },
+                    {
+                      "name": "name_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "name",
+                    "queryName": "dashboards/01f0c0d09cfd130aaff0014710caeb65/datasets/01f0c0d1143c186394f4b0257f9ef2d2_name"
+                  }
+                ]
+              },
+              "disallowAll": false,
+              "frame": {
+                "showTitle": true,
+                "title": "Name"
+              },
+              "scale": {
+                "type": "categorical",
+                "sort": {
+                  "by": "custom-order",
+                  "orderedValues": [
+                    "Brooklyn Bridge",
+                    "George Washington Bridge",
+                    "Queens Midtown Tunnel",
+                    "Thames Tunnel",
+                    "Tower Bridge"
+                  ]
+                }
+              }
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "light": "#E2E2E2"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 2,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "a91f14c6",
+            "queries": [
+              {
+                "name": "dashboards/01f0c0d09cfd130aaff0014710caeb65/datasets/01f0c0d1143c186394f4b0257f9ef2d2_location",
+                "query": {
+                  "datasetName": "fea69a45",
+                  "fields": [
+                    {
+                      "name": "location",
+                      "expression": "`location`"
+                    },
+                    {
+                      "name": "location_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "location",
+                    "queryName": "dashboards/01f0c0d09cfd130aaff0014710caeb65/datasets/01f0c0d1143c186394f4b0257f9ef2d2_location"
+                  }
+                ]
+              },
+              "disallowAll": false,
+              "frame": {
+                "showTitle": true,
+                "title": "Location"
+              }
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "light": "#E2E2E2"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 2,
+            "width": 2,
+            "height": 1
+          }
+        },
+        {
+          "widget": {
+            "name": "ed8252e7",
+            "queries": [
+              {
+                "name": "dashboards/01f0c0d09cfd130aaff0014710caeb65/datasets/01f0c0d1143c186394f4b0257f9ef2d2_type",
+                "query": {
+                  "datasetName": "fea69a45",
+                  "fields": [
+                    {
+                      "name": "type",
+                      "expression": "`type`"
+                    },
+                    {
+                      "name": "type_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "filter-single-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "type",
+                    "queryName": "dashboards/01f0c0d09cfd130aaff0014710caeb65/datasets/01f0c0d1143c186394f4b0257f9ef2d2_type"
+                  }
+                ]
+              },
+              "frame": {
+                "showTitle": true,
+                "title": "Type"
+              }
+            },
+            "specExtensions": {
+              "widgetBackgroundColor": {
+                "light": "#E2E2E2"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 2,
+            "width": 2,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS"
+    },
+    {
+      "name": "aa3b15a2",
+      "displayName": "Global Filters",
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "genieSpace": {
+      "isEnabled": false
+    },
+    "applyModeEnabled": false
+  }
+}
